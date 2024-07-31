@@ -152,10 +152,10 @@ function SmolCanvas:raw_grid_to_string()
     return table.concat(rows, "\n")
 end
 
-function SmolCanvas:render_canvas(screen_x, screen_y)
-    local saved_cursor_x, saved_cursor_y = term.getCursorPos()
-    local saved_text_color = term.getTextColor()
-    local saved_background_color = term.getBackgroundColor()
+function SmolCanvas:get_canvas_blit()
+    local characters_blit = ""
+    local foreground_blit = ""
+    local background_blit = ""
     for char_y = 1, self.char_height do
         for char_x = 1, self.char_width do
             local pixel_start_x = (char_x - 1) * 2 + 1
@@ -168,19 +168,35 @@ function SmolCanvas:render_canvas(screen_x, screen_y)
                 end
             end
             
-            term.setCursorPos(screen_x + char_x - 1, screen_y + char_y - 1)
             if character_table[char_pixels] then
-                term.setTextColor(self.foreground)
-                term.setBackgroundColor(self.background)
-                term.write(character_table[char_pixels])
+                characters_blit = characters_blit .. character_table[char_pixels]
+                foreground_blit = foreground_blit .. colors.toBlit(self.foreground)
+                background_blit = background_blit .. colors.toBlit(self.background)
             elseif inverted_character_table[char_pixels] then
-                term.setTextColor(self.background)
-                term.setBackgroundColor(self.foreground)
-                term.write(inverted_character_table[char_pixels])
+                characters_blit = characters_blit .. inverted_character_table[char_pixels]
+                foreground_blit = foreground_blit .. colors.toBlit(self.background)
+                background_blit = background_blit .. colors.toBlit(self.foreground)
             end
-            
         end
     end
+    return characters_blit, foreground_blit, background_blit
+end
+
+function SmolCanvas:render_canvas(screen_x, screen_y)
+    local saved_cursor_x, saved_cursor_y = term.getCursorPos()
+    local saved_text_color = term.getTextColor()
+    local saved_background_color = term.getBackgroundColor()
+
+    local characters_blit, foreground_blit, background_blit = self:get_canvas_blit()
+
+    for char_y = 1, self.char_height do
+        term.setCursorPos(screen_x, char_y + screen_y - 1)
+        local characters_sub = string.sub(characters_blit, 1 + self.char_width * char_y - self.char_width, self.char_width * char_y)
+        local foreground_sub = string.sub(foreground_blit, 1 + self.char_width * char_y - self.char_width, self.char_width * char_y)
+        local background_sub = string.sub(background_blit, 1 + self.char_width * char_y - self.char_width, self.char_width * char_y)
+        term.blit(characters_sub, foreground_sub, background_sub)
+    end
+    
     term.setCursorPos(saved_cursor_x, saved_cursor_y)
     term.setTextColor(saved_text_color)
     term.setBackgroundColor(saved_background_color)
@@ -188,8 +204,7 @@ end
 
 
 local function test()
-    local canv = SmolCanvas.new(51, 18)
-    local pretty = require "cc.pretty"
+    local canv = SmolCanvas.new(49, 17)
 
     canv:draw_line(1,1,canv.pixel_width,canv.pixel_height)
     canv:draw_line(1,1,canv.pixel_width/2,canv.pixel_height)
@@ -198,7 +213,7 @@ local function test()
     canv:set_foreground_color(colors.white)
     canv:set_background_color(colors.black)
     term.clear()
-    canv:render_canvas(1,2)
+    canv:render_canvas(2,2)
     term.setCursorPos(1,1)
 end
 
