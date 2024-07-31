@@ -84,7 +84,7 @@ function SmolCanvas:write_line(x1, y1, x2, y2, value)
     local sy = y1 < y2 and 1 or -1
     local err = dx - dy
     
-    for i = 1, 100 do
+    for i = 1, 500 do
         if x1 >= 1 and x1 <= self.pixel_width and y1 >= 1 and y1 <= self.pixel_height then
             self.pixel_grid[x1][y1] = value
         end
@@ -193,11 +193,11 @@ local canv = SmolCanvas.new(51, 18)
 local pretty = require "cc.pretty"
 
 canv:draw_line(1,1,canv.pixel_width,canv.pixel_height)
-canv:draw_line(1,1,math.floor(canv.pixel_width/2),canv.pixel_height)
-canv:draw_line(1,1,math.floor(canv.pixel_width/3),canv.pixel_height)
+canv:draw_line(1,1,canv.pixel_width/2,canv.pixel_height)
+canv:draw_line(1,1,canv.pixel_width/3,canv.pixel_height)
 -- print(canv:raw_grid_to_string())
-canv:set_foreground_color(colors.yellow)
-canv:set_background_color(colors.purple)
+canv:set_foreground_color(colors.white)
+canv:set_background_color(colors.black)
 term.clear()
 canv:render_canvas(1,2)
 term.setCursorPos(1,1)
