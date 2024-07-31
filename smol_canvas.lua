@@ -57,6 +57,14 @@ function SmolCanvas.new(width, height)
     return self
 end
 
+function SmolCanvas:set_foreground_color(color)
+    self.foreground = color
+end
+
+function SmolCanvas:set_background_color(color)
+    self.background = color
+end
+
 function SmolCanvas:write_pixel(x, y, value)
     self.pixel_grid[x][y] = value
 end
@@ -76,7 +84,7 @@ function SmolCanvas:write_line(x1, y1, x2, y2, value)
     local sy = y1 < y2 and 1 or -1
     local err = dx - dy
     
-    while true do
+    for i = 1, 100 do
         if x1 >= 1 and x1 <= self.pixel_width and y1 >= 1 and y1 <= self.pixel_height then
             self.pixel_grid[x1][y1] = value
         end
@@ -144,14 +152,54 @@ function SmolCanvas:raw_grid_to_string()
     return table.concat(rows, "\n")
 end
 
+function SmolCanvas:render_canvas(screen_x, screen_y)
+    local saved_cursor_x, saved_cursor_y = term.getCursorPos()
+    local saved_text_color = term.getTextColor()
+    local saved_background_color = term.getBackgroundColor()
+    for char_y = 1, self.char_height do
+        for char_x = 1, self.char_width do
+            local pixel_start_x = (char_x - 1) * 2 + 1
+            local pixel_start_y = (char_y - 1) * 3 + 1
+            
+            local char_pixels = ""
+            for y = 0, 2 do
+                for x = 0, 1 do
+                    char_pixels = char_pixels .. tostring(self.pixel_grid[pixel_start_x + x][pixel_start_y + y])
+                end
+            end
+            
+            term.setCursorPos(screen_x + char_x - 1, screen_y + char_y - 1)
+            if character_table[char_pixels] then
+                term.setTextColor(self.foreground)
+                term.setBackgroundColor(self.background)
+                term.write(character_table[char_pixels])
+            elseif inverted_character_table[char_pixels] then
+                term.setTextColor(self.background)
+                term.setBackgroundColor(self.foreground)
+                term.write(inverted_character_table[char_pixels])
+            end
+            
+        end
+    end
+    term.setCursorPos(saved_cursor_x, saved_cursor_y)
+    term.setTextColor(saved_text_color)
+    term.setBackgroundColor(saved_background_color)
+end
 
 
 
 
-local canv = SmolCanvas.new(3, 1)
+local canv = SmolCanvas.new(51, 18)
 local pretty = require "cc.pretty"
 
-canv:draw_line(2,1,1,1)
-print(canv:raw_grid_to_string())
+canv:draw_line(1,1,canv.pixel_width,canv.pixel_height)
+canv:draw_line(1,1,math.floor(canv.pixel_width/2),canv.pixel_height)
+canv:draw_line(1,1,math.floor(canv.pixel_width/3),canv.pixel_height)
+-- print(canv:raw_grid_to_string())
+canv:set_foreground_color(colors.yellow)
+canv:set_background_color(colors.purple)
+term.clear()
+canv:render_canvas(1,2)
+term.setCursorPos(1,1)
 
 return SmolCanvas
