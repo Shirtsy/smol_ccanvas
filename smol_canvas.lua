@@ -218,21 +218,4 @@ function SmolCanvas:render_canvas(screen_x, screen_y)
     term.setBackgroundColor(saved_background_color)
 end
 
-
-local function test()
-    local canv = SmolCanvas.new(49, 17)
-
-    canv:draw_line(1,1,canv.pixel_width,canv.pixel_height)
-    canv:draw_line(1,1,canv.pixel_width/2,canv.pixel_height)
-    canv:draw_line(1,1,canv.pixel_width/3,canv.pixel_height)
-    -- print(canv:raw_grid_to_string())
-    canv:set_foreground_color(colors.white)
-    canv:set_background_color(colors.black)
-    term.clear()
-    canv:render_canvas(2,2)
-    term.setCursorPos(1,1)
-end
-
-test()
-
 return SmolCanvas
