@@ -65,6 +65,22 @@ function SmolCanvas:set_background_color(color)
     self.background = color
 end
 
+function SmolCanvas:fill_canvas()
+    for x = 1, self.pixel_width do
+        for y = 1, self.pixel_height do
+            self.pixel_grid[x][y] = 1
+        end
+    end
+end
+
+function SmolCanvas:erase_canvas()
+    for x = 1, self.pixel_width do
+        for y = 1, self.pixel_height do
+            self.pixel_grid[x][y] = 0
+        end
+    end
+end
+
 function SmolCanvas:write_pixel(x, y, value)
     self.pixel_grid[x][y] = value
 end
