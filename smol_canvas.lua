@@ -187,19 +187,21 @@ function SmolCanvas:render_canvas(screen_x, screen_y)
 end
 
 
+local function test()
+    local canv = SmolCanvas.new(51, 18)
+    local pretty = require "cc.pretty"
 
+    canv:draw_line(1,1,canv.pixel_width,canv.pixel_height)
+    canv:draw_line(1,1,canv.pixel_width/2,canv.pixel_height)
+    canv:draw_line(1,1,canv.pixel_width/3,canv.pixel_height)
+    -- print(canv:raw_grid_to_string())
+    canv:set_foreground_color(colors.white)
+    canv:set_background_color(colors.black)
+    term.clear()
+    canv:render_canvas(1,2)
+    term.setCursorPos(1,1)
+end
 
-local canv = SmolCanvas.new(51, 18)
-local pretty = require "cc.pretty"
-
-canv:draw_line(1,1,canv.pixel_width,canv.pixel_height)
-canv:draw_line(1,1,canv.pixel_width/2,canv.pixel_height)
-canv:draw_line(1,1,canv.pixel_width/3,canv.pixel_height)
--- print(canv:raw_grid_to_string())
-canv:set_foreground_color(colors.white)
-canv:set_background_color(colors.black)
-term.clear()
-canv:render_canvas(1,2)
-term.setCursorPos(1,1)
+test()
 
 return SmolCanvas
