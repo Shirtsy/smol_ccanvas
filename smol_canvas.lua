@@ -165,6 +165,49 @@ function SmolCanvas:erase_rectangle(x1, y1, x2, y2)
     self:write_rectangle(x1, y1, x2, y2, 0)
 end
 
+-- Draw a filled ellipse
+function SmolCanvas:write_ellipse(x1, y1, x2, y2, value)
+    -- Ensure x1 <= x2 and y1 <= y2
+    local startX = math.min(x1, x2)
+    local endX = math.max(x1, x2)
+    local startY = math.min(y1, y2)
+    local endY = math.max(y1, y2)
+
+    -- Calculate center and radii
+    local centerX = (startX + endX) / 2
+    local centerY = (startY + endY) / 2
+    local radiusX = (endX - startX) / 2
+    local radiusY = (endY - startY) / 2
+
+    -- Clamp values to stay within the canvas bounds
+    local minX = math.max(1, math.floor(startX))
+    local maxX = math.min(self.pixel_width, math.ceil(endX))
+    local minY = math.max(1, math.floor(startY))
+    local maxY = math.min(self.pixel_height, math.ceil(endY))
+
+    -- Fill the ellipse
+    for x = minX, maxX do
+        for y = minY, maxY do
+            local dx = (x - centerX) / radiusX
+            local dy = (y - centerY) / radiusY
+            if dx * dx + dy * dy <= 1 then
+                self.pixel_grid[x][y] = value
+            end
+        end
+    end
+end
+
+-- Draw a filled ellipse with the foreground color
+function SmolCanvas:draw_ellipse(x1, y1, x2, y2)
+    self:write_ellipse(x1, y1, x2, y2, 1)
+end
+
+-- Erase an ellipse (fill with background color)
+function SmolCanvas:erase_ellipse(x1, y1, x2, y2)
+    self:write_ellipse(x1, y1, x2, y2, 0)
+end
+
+
 -- Convert the pixel grid to a string representation (for debugging)
 function SmolCanvas:raw_grid_to_string()
     local rows = {}
