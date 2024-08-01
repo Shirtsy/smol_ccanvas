@@ -59,6 +59,17 @@ A smol Computercraft library for sub-character rendering!
 - Erases a rectangle area to the background color
 - Parameters: `x1`, `y1`, `x2`, `y2` (Corner coordinates)
 
+## Ellipses
+
+### `SmolCanvas:draw_ellipse(x1, y1, x2, y2)`
+- Draws a filled ellipse in the foreground color
+- Parameters: `x1`, `y1`, `x2`, `y2` (Bounding box coordinates)
+
+### `SmolCanvas:erase_ellipse(x1, y1, x2, y2)`
+- Erases an ellipse area to the background color
+- Parameters: `x1`, `y1`, `x2`, `y2` (Bounding box coordinates)
+
+
 ## Rendering
 
 ### `SmolCanvas:get_canvas_blit()`
